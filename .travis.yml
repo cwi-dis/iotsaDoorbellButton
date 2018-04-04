@@ -4,6 +4,5 @@ python:
 install:
 - pip install -U platformio
 script:
-- (cd iotsaDoorbellButton ; platformio run)
-- (cd iotsaDoorbellRinger ; platformio run)
+- platformio run
 
