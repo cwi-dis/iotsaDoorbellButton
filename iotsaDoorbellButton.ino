@@ -439,10 +439,16 @@ void IotsaButtonMod::loop() {
     if (millis() > buttons[i].debounceTime + DEBOUNCE_DELAY) {
       int newButtonState = (state == LOW);
       if (newButtonState != buttons[i].buttonState) {
+        IFDEBUG IotsaSerial.print(i);
+        IFDEBUG IotsaSerial.print(':');
+        IFDEBUG IotsaSerial.print((int)newButtonState);
         buttons[i].buttonState = newButtonState;
         bool doSend = (buttons[i].buttonState && buttons[i].sendOnPress) || (!buttons[i].buttonState && buttons[i].sendOnRelease);
         if (doSend && buttons[i].url != "") {
+          IFDEBUG IotsaSerial.println("send");
           sendRequest(buttons[i].url, buttons[i].token, buttons[i].fingerprint);
+        } else {
+          IFDEBUG IotsaSerial.println("ignore");
         }
       }
     }
