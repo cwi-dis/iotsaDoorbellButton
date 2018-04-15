@@ -27,14 +27,6 @@
 #define PIN_BUTTON 4	// GPIO4 is the pushbutton
 #define PIN_LOCK 5		// GPIO5 is the keylock switch
 #define PIN_NEOPIXEL 15  // pulled-down during boot, can be used for NeoPixel afterwards
-#define IFDEBUGX if(0)
-
-// Define this to handle https requests with WifiClientSecure, there seems to be an issue
-// (in esp8266 2.4.0) with HttpClient complaining about the fingerprint.
-#undef HTTPS_BUG_WORKAROUND
-#ifdef HTTPS_BUG_WORKAROUND
-#include <WiFiClientSecure.h>
-#endif
 
 ESP8266WebServer server(80);
 IotsaApplication application(server, "Doorbell Button Server");
@@ -311,90 +303,6 @@ String IotsaButtonMod::info() {
   return "<p>See <a href='/buttons'>/buttons</a> to program URLs for button presses. REST API at <a href='/api/buttons'>/api/buttons</a></p>";
 }
 
-#ifdef HTTPS_BUG_WORKAROUND
-bool sendRequestHTTPSWorkaround(String urlStr, String token, String fingerprint="") {
-  bool rv = true;
-  int index = urlStr.indexOf(':');
-  if(index < 0) {
-    IotsaSerial.println("No protocol in url");
-    return false;
-  }
-
-  String _protocol = urlStr.substring(0, index);
-  if (_protocol != "https") {
-    IotsaSerial.println("Not https");
-    return false;
-  }
-  urlStr.remove(0, (index + 3)); // remove http:// or https://
-
-  index = urlStr.indexOf('/');
-  String hostTmp = urlStr.substring(0, index);
-  String host;
-  int port;
-  urlStr.remove(0, index); // remove host part
-
-  // get Authorization
-  index = hostTmp.indexOf('@');
-  if(index >= 0) {
-    IotsaSerial.println("Username in URL not supported");
-    return false;
-  }
-
-  // get port
-  index = hostTmp.indexOf(':');
-  if(index >= 0) {
-      host = hostTmp.substring(0, index); // hostname
-      hostTmp.remove(0, (index + 1)); // remove hostname + :
-      port = hostTmp.toInt(); // get port
-  } else {
-      host = hostTmp;
-  }
-
-  WiFiClientSecure client;
-
-  client.connect(host, port);
-  if (fingerprint != "") {
-    if (!client.verify(fingerprint.c_str(), host.c_str())) {
-      IotsaSerial.println("https fingerprint does not match");
-      ledMod.set(0x200000, 250, 0, 1); // quarter second red flash for failure
-      return false;
-    }
-  } else {
-    IotsaSerial.println("Warning: no fingerprint");
-  }
-  String req = "GET ";
-  req += urlStr;
-  req += " HTTP/1.1\r\nUser-Agent: iotsa\r\nHost: ";
-  req += host;
-  req += "\r\n";
-  if (token) {
-    req += "Authorization: Bearer ";
-    req += token;
-    req += "\r\n";
-  }
-  req += "Connection: close\r\n\r\n";
-
-  String rep = client.readStringUntil('\n');
-  if (rep.startsWith("HTTP/1.1 2")) {
-    ledMod.set(0x002000, 250, 0, 1); // quarter second green flash for success
-    IFDEBUG IotsaSerial.print(" OK GET ");
-    IFDEBUG IotsaSerial.println(urlStr);
-    rv = true;
-  } else {
-    ledMod.set(0x200000, 250, 0, 1); // quarter second red flash for failure
-    IFDEBUG IotsaSerial.print(" FAIL GET ");
-    IFDEBUG IotsaSerial.println(urlStr);
-    IFDEBUG IotsaSerial.println(rep);
-    rv = false;  
-  }
-  // Read all headers, at least
-  while (client.connected()) {
-    rep = client.readStringUntil('\n');
-    if (rep == "" || rep == "\r") break;
-  }
-  return rv;
-}
-#endif
 
 bool sendRequest(String urlStr, String token, String fingerprint="") {
   bool rv = true;
@@ -402,11 +310,7 @@ bool sendRequest(String urlStr, String token, String fingerprint="") {
   ledMod.set(0x000020, 250, 250, 10); // Flash 2 times per second blue, while connecting
   delay(1);
   if (urlStr.startsWith("https:")) {
-#ifdef HTTPS_BUG_WORKAROUND
-    return sendRequestHTTPSWorkaround(urlStr, token, fingerprint);
-#else
     http.begin(urlStr, fingerprint);
-#endif
   } else {
     http.begin(urlStr);  
   }
