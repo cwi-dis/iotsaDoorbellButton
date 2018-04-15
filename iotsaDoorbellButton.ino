@@ -55,7 +55,6 @@ callback buttonNotOk = std::bind(&IotsaLedMod::set, ledMod, 0x200000, 250, 0, 1)
 
 IotsaButtonMod buttonMod(application, buttons, nButton, &myTokenAuthenticator, buttonOk, buttonNotOk);
 
-
 //
 // Boilerplate for iotsa server, with hooks to our code added.
 //
