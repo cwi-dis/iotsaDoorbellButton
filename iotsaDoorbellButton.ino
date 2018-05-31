@@ -30,8 +30,7 @@
 #define PIN_LOCK 5		// GPIO5 is the keylock switch
 #define PIN_NEOPIXEL 15  // pulled-down during boot, can be used for NeoPixel afterwards
 
-ESP8266WebServer server(80);
-IotsaApplication application(server, "Doorbell Button Server");
+IotsaApplication application("Doorbell Button Server");
 
 // Configure modules we need
 IotsaWifiMod wifiMod(application);  // wifi is always needed
@@ -40,9 +39,9 @@ IotsaLedMod ledMod(application, PIN_NEOPIXEL);
 
 IotsaUserMod myUserAuthenticator(application, "owner");  // Our username/password authenticator module
 IotsaCapabilityMod myTokenAuthenticator(application, myUserAuthenticator); // Our token authenticator
+#ifdef IOTSA_WITH_HTTP_OR_HTTPS
 IotsaLoggerMod myLogger(application, &myTokenAuthenticator);
-// NOTE: the next line is temporary, for development, it allows getting at tokens.
-IotsaFilesBackupMod filesBackupMod(application, &myTokenAuthenticator);  // we want backup to clone server
+#endif
 
 
 Button buttons[] = {
