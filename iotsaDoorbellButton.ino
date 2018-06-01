@@ -39,7 +39,7 @@ IotsaLedMod ledMod(application, PIN_NEOPIXEL);
 
 IotsaUserMod myUserAuthenticator(application, "owner");  // Our username/password authenticator module
 IotsaCapabilityMod myTokenAuthenticator(application, myUserAuthenticator); // Our token authenticator
-#ifdef IOTSA_WITH_HTTP_OR_HTTPS
+#ifdef IOTSA_WITH_HTTP
 IotsaLoggerMod myLogger(application, &myTokenAuthenticator);
 #endif
 
