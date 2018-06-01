@@ -49,8 +49,14 @@ Button buttons[] = {
   Button(PIN_LOCK, true, true)
 };
 const int nButton = sizeof(buttons) / sizeof(buttons[0]);
-callback buttonOk = std::bind(&IotsaLedMod::set, ledMod, 0x002000, 250, 0, 1);
-callback buttonNotOk = std::bind(&IotsaLedMod::set, ledMod, 0x200000, 250, 0, 1);
+
+static void buttonOk() {
+  ledMod.set(0x002000, 250, 0, 1);
+}
+
+static void buttonNotOk() {
+  ledMod.set(0x200000, 250, 0, 1);
+}
 
 IotsaButtonMod buttonMod(application, buttons, nButton, &myTokenAuthenticator, buttonOk, buttonNotOk);
 
