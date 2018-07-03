@@ -24,6 +24,8 @@
 #include "iotsaLogger.h"
 #include "iotsaCapabilities.h"
 #include "iotsaButton.h"
+#include "iotsaFilesUpload.h"
+#include "iotsaFilesBackup.h"
 #include <functional>
 
 #define PIN_BUTTON 4	// GPIO4 is the pushbutton
@@ -36,11 +38,13 @@ IotsaApplication application("Doorbell Button Server");
 IotsaWifiMod wifiMod(application);  // wifi is always needed
 IotsaOtaMod otaMod(application);    // we want OTA for updating the software (will not work with esp-201)
 IotsaLedMod ledMod(application, PIN_NEOPIXEL);
+//IotsaFilesBackupMod backupMod(application); // xxxjack debug
+//IotsaFilesUploadMod uploadMod(application); // xxxjack debug
 
 IotsaUserMod myUserAuthenticator(application, "owner");  // Our username/password authenticator module
 IotsaCapabilityMod myTokenAuthenticator(application, myUserAuthenticator); // Our token authenticator
 #ifdef IOTSA_WITH_HTTP
-IotsaLoggerMod myLogger(application, &myTokenAuthenticator);
+//IotsaLoggerMod myLogger(application, &myTokenAuthenticator);
 #endif
 
 
