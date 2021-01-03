@@ -12,7 +12,6 @@
 // License TBD.
 //
 
-#include <ESP8266HTTPClient.h>
 #include "iotsa.h"
 #include "iotsaWifi.h"
 #include "iotsaOta.h"
@@ -70,7 +69,9 @@ IotsaButtonMod buttonMod(application, buttons, nButton, &myTokenAuthenticator, b
 void setup(void) {
   application.setup();
   application.serverSetup();
+#ifndef ESP32
   ESP.wdtEnable(WDTO_120MS);
+#endif
 }
  
 void loop(void) {
