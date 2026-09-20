@@ -40,12 +40,14 @@ Button buttons[] = {
 };
 const int nButton = sizeof(buttons) / sizeof(buttons[0]);
 
+// Transient status-LED pulses (cwi-dis/iotsa#176/#256) -- decay back to the
+// normal status display on their own, no restore logic needed.
 static void buttonOk() {
-  ledMod.set(0x002000, 250, 0, 1);
+  iotsaStatus.setStatusPulse(0x002000, 0, 0, 250, "button ok");
 }
 
 static void buttonNotOk() {
-  ledMod.set(0x200000, 250, 0, 1);
+  iotsaStatus.setStatusPulse(0x200000, 0, 0, 250, "button not ok");
 }
 
 IotsaButtonMod buttonMod(application, buttons, nButton, &myTokenAuthenticator, buttonOk, buttonNotOk);
