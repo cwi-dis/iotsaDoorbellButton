@@ -11,28 +11,20 @@
 //
 
 #include "iotsa.h"
-#include "iotsaWifi.h"
-#include "iotsaOta.h"
 #include "iotsaUser.h"
-#include "iotsaLed.h"
 #include "iotsaCapabilities.h"
 #include "iotsaButton.h"
 #include <functional>
 
 #define PIN_BUTTON 4	// GPIO4 is the pushbutton
 #define PIN_LOCK 5		// GPIO5 is the keylock switch
-#define PIN_NEOPIXEL 15  // pulled-down during boot, can be used for NeoPixel afterwards
 
 IotsaApplication application("Doorbell Button Server");
 
 // Configure modules we need
-IotsaWifiMod wifiMod(application);  // wifi is always needed
-IotsaOtaMod otaMod(application);    // we want OTA for updating the software (will not work with esp-201)
-IotsaLedMod ledMod(application, PIN_NEOPIXEL);
 
 IotsaUserMod myUserAuthenticator(application, "owner");  // Our username/password authenticator module
 IotsaCapabilityMod myTokenAuthenticator(application, myUserAuthenticator); // Our token authenticator
-
 
 Button buttons[] = {
   Button(PIN_BUTTON, true, false),
@@ -50,12 +42,13 @@ static void buttonNotOk() {
   iotsaStatus.setStatusPulse(0x200000, 0, 0, 250, "button not ok");
 }
 
-IotsaButtonMod buttonMod(application, buttons, nButton, &myTokenAuthenticator, buttonOk, buttonNotOk);
+IotsaButtonMod buttonMod(application, buttons, nButton, buttonOk, buttonNotOk);
 
 //
 // Boilerplate for iotsa server, with hooks to our code added.
 //
 void setup(void) {
+  application.setAuth(&myTokenAuthenticator);  // every module, the standard ones included, uses this
   application.setup();
   application.lateSetup();
 #ifndef ESP32
