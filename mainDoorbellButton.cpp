@@ -51,9 +51,6 @@ void setup(void) {
   application.setAuth(&myTokenAuthenticator);  // every module, the standard ones included, uses this
   application.setup();
   application.lateSetup();
-#ifndef ESP32
-  ESP.wdtEnable(WDTO_120MS);
-#endif
 }
 
 void loop(void) {
