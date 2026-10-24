@@ -12,5 +12,5 @@ Use the shared `iotsa` CLI (from the iotsa repo, `extras/python/`; see `iotsa-gr
 - **WiFi** — `iotsa networks` finds the `config-iotsa<suffix>` AP; then `iotsa --ssid config-iotsa<suffix> wifiConfig ssid=… ssidPassword=…`, then reboot.
 - **Hostname** — `iotsa -t iotsa<suffix>.local --credentials owner:… configWait config hostName=…` (put the device in configuration mode when `configWait` asks; don't reboot it yourself to force the mode).
 - **Capability issuer** — `iotsa -t <name>.local --credentials owner:… configWait xConfig capabilities trustedIssuer=<url> issuerKey=<shared-secret>`.
-- **Button actions** — each button/keyswitch can be set (through the `buttons` module, gated by the device capability) to fire a GET at a preprogrammed URL, typically an _iotsaDoorbellRinger_'s `/api/alarm`.
+- **Button actions** — each button/keyswitch can be set (through the `buttons` module, which needs the right `buttons`, from a user or a capability token) to fire a GET at a preprogrammed URL, typically an _iotsaDoorbellRinger_'s trigger `/ring?alarm=20` (2 seconds). The request needs a token or credentials with the ringer's right `alarm`.
 

@@ -1,7 +1,7 @@
 //
 // Doorbell button server: a pushbutton and a keylock switch. Each can be polled
-// over REST, or set up (via the device's capability) to fire a GET request to a
-// preprogrammed URL -- typically an iotsaDoorbellRinger.
+// over REST, or set up (with the right "buttons") to fire a GET request to a
+// preprogrammed URL -- typically an iotsaDoorbellRinger's /ring?alarm=20.
 //
 // Hardware schematics and PCB stripboard layout are in the "extras" folder, in
 // Fritzing format, for an ESP-201-based device.
